@@ -118,13 +118,14 @@ var completeEditTask = function(taskName, taskType, taskId) {
       }
   }
 
-  saveTasks();
   alert("Task Updated!");
 
   // remove data attribute from form
   formEl.removeAttribute("data-task-id");
   // update formEl button to go back to saying "Add Task" instead of "Edit Task"
   formEl.querySelector("#save-task").textContent = "Add Task";
+  saveTasks();
+
 };
 
 var taskButtonHandler = function(event) {
@@ -163,9 +164,10 @@ var taskStatusChangeHandler = function(event) {
 
   for (var i = 0; i <tasks.length; i++){
       if (tasks[i].id === parseInt(taskId)) {
-          tasks[i].status = statusValue;
+          tasks[i].status = statusValue; // Why is this line not working!!!????
       }
   }
+  console.log("changed the status!")
   saveTasks();
 };
 
@@ -218,42 +220,14 @@ var saveTasks = function() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 var loadTasks = function() {
-    var tasks = localStorage.getItem("tasks",tasks); 
-    if (tasks === null) {
-        tasks = [];
+    var savedTasks = localStorage.getItem("tasks"); 
+    if (savedTasks === null) {
         return false;
     }
-    tasks = JSON.parse(tasks);
-    console.log (tasks);
-    for (var i = 0; i < tasks.length; i++) {
-        tasks[i].id = taskIdCounter;
-        console.log(tasks[i]);
-
-        var listItemEl = document.createElement("li");
-        listItemEl.className = "task-item";
-        listItemEl.setAttribute("data-task-id", tasks[i].id);
-        console.log(listItemEl);
-        var taskInfoEl = document.createElement("div");
-        taskInfoEl.className = "task-info";
-        taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
-        listItemEl.appendChild(taskInfoEl);
-        var taskActionsEl = createTaskActions(tasks[i].id);
-        listItemEl.appendChild(taskActionsEl);
-        console.log(listItemEl);
-        if (tasks[i].status === "to do") {
-            listItemEl.querySelector("select[name='status-change']").selectedIndex === 0;
-            tasksToDoEl.appendChild(listItemEl);
-        } 
-        if (tasks[i].status === "in progress") {
-            listItemEl.querySelector("select[name='status-change']").selectedIndex === 1;
-            tasksInProgressEl.appendChild(listItemEl);
-        } 
-        else if (tasks[i].status = "complete") {
-            listItemEl.querySelector("select[name='status-change']").selectedIndex === 2;
-            tasksCompletedEl.appendChild(listItemEl);
-        }
-        taskIdCounter ++;
+    savedTasks = JSON.parse(savedTasks);
     
+    for (var i = 0; i < savedTasks.length; i++){
+        createTaskEl(savedTasks[i]);
     }
     
     // .getitem gets it from local storage, but we need a way to destringify
