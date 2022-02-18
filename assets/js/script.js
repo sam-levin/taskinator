@@ -60,6 +60,7 @@ var createTaskEl = function(taskDataObj) {
   tasks.push(taskDataObj);
   // increase task counter for next unique id
   taskIdCounter++;
+  saveTasks();
 };
 
 var createTaskActions = function(taskId) {
@@ -117,6 +118,7 @@ var completeEditTask = function(taskName, taskType, taskId) {
       }
   }
 
+  saveTasks();
   alert("Task Updated!");
 
   // remove data attribute from form
@@ -164,7 +166,7 @@ var taskStatusChangeHandler = function(event) {
           tasks[i].status = statusValue;
       }
   }
-
+  saveTasks();
 };
 
 var editTask = function(taskId) {
@@ -202,15 +204,64 @@ var deleteTask = function(taskId) {
   for (var i = 0; i < tasks.length; i++) {
       // if tasks[i].id doens't match the value of taskId, we keep that task and push it into the new array
       if (tasks[i].id !== parseInt(taskId)) {
-          updatedTaskArr.push(tasks[i])
+          updatedTaskArr.push(tasks[i]);
       }
   }
 
-  tasks = updatedTaskArr
+  tasks = updatedTaskArr;
 
-
+  saveTasks();
 };
 
+
+var saveTasks = function() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+var loadTasks = function() {
+    var tasks = localStorage.getItem("tasks",tasks); 
+    if (tasks === null) {
+        tasks = [];
+        return false;
+    }
+    tasks = JSON.parse(tasks);
+    console.log (tasks);
+    for (var i = 0; i < tasks.length; i++) {
+        tasks[i].id = taskIdCounter;
+        console.log(tasks[i]);
+
+        var listItemEl = document.createElement("li");
+        listItemEl.className = "task-item";
+        listItemEl.setAttribute("data-task-id", tasks[i].id);
+        console.log(listItemEl);
+        var taskInfoEl = document.createElement("div");
+        taskInfoEl.className = "task-info";
+        taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
+        listItemEl.appendChild(taskInfoEl);
+        var taskActionsEl = createTaskActions(tasks[i].id);
+        listItemEl.appendChild(taskActionsEl);
+        console.log(listItemEl);
+        if (tasks[i].status === "to do") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex === 0;
+            tasksToDoEl.appendChild(listItemEl);
+        } 
+        if (tasks[i].status === "in progress") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex === 1;
+            tasksInProgressEl.appendChild(listItemEl);
+        } 
+        else if (tasks[i].status = "complete") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex === 2;
+            tasksCompletedEl.appendChild(listItemEl);
+        }
+        taskIdCounter ++;
+    
+    }
+    
+    // .getitem gets it from local storage, but we need a way to destringify
+    // this next line should be a for loop that iterates through the array 
+    // the for loop's functionality should also include something that puts the array stuff back into the page
+}
+
+loadTasks();
 // Create a new task
 formEl.addEventListener("submit", taskFormHandler);
 
