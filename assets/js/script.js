@@ -143,33 +143,37 @@ var taskButtonHandler = function(event) {
   }
 };
 
-var taskStatusChangeHandler = function(event) {
-  console.log(event.target.value);
-
-  // find task list item based on event.target's data-task-id attribute
-  var taskId = event.target.getAttribute("data-task-id");
-
-  var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
-
-  // convert value to lower case
-  var statusValue = event.target.value.toLowerCase();
-
-  if (statusValue === "to do") {
-    tasksToDoEl.appendChild(taskSelected);
-  } else if (statusValue === "in progress") {
-    tasksInProgressEl.appendChild(taskSelected);
-  } else if (statusValue === "completed") {
-    tasksCompletedEl.appendChild(taskSelected);
-  }
-
-  for (var i = 0; i <tasks.length; i++){
+var taskStatusChangeHandler = function (event) {
+    console.log(event.target.value);
+  
+    // find task list item based on event.target's data-task-id attribute
+    var taskId = event.target.getAttribute("data-task-id");
+  
+    var taskSelected = document.querySelector(
+      ".task-item[data-task-id='" + taskId + "']"
+    );
+  
+    // convert value to lower case
+    var statusValue = event.target.value.toLowerCase();
+  
+    if (statusValue === "to do") {
+      tasksToDoEl.appendChild(taskSelected);
+    } else if (statusValue === "in progress") {
+      tasksInProgressEl.appendChild(taskSelected);
+    } else if (statusValue === "completed") {
+      tasksCompletedEl.appendChild(taskSelected);
+    }
+  
+    // update task's in tasks array
+    for (var i = 0; i < tasks.length; i++) {
       if (tasks[i].id === parseInt(taskId)) {
-          tasks[i].status = statusValue; // Why is this line not working!!!????
+        tasks[i].status = statusValue;
       }
-  }
-  console.log("changed the status!")
-  saveTasks();
-};
+    }
+  
+    // save to localStorage
+    saveTasks();
+  };
 
 var editTask = function(taskId) {
   console.log(taskId);
